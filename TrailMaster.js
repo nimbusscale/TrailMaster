@@ -5,14 +5,11 @@ var TrailMaster = function () {
       tokenCharMgrEnabled: true,
       roundTurnMgrEnabled: true,
     };
-  log(`-=> TrailMaster - Main v${version} <=-`);
 };
 
 TrailMaster.prototype.TokenCharMgr = function () {
   'use strict';
   const version = '0.0.1';
-  this.settings = {};
-  log(`-=> TrailMaster - TokenCharMgr v${version} <=-`);
   return {
     CharType: function (char) {
       // Pass character object and get back if character is a player, npc or mook
@@ -47,9 +44,15 @@ TrailMaster.prototype.TokenCharMgr = function () {
 TrailMaster.prototype.RoundTurnMgr = function () {
   'use strict';
   const version = '0.0.1';
-  this.settings = {};
-  log(`-=> TrailMaster - RoundTurnMgr v${version} <=-`);
   return {
+    RegisterEventHandlers: function () {
+      on('change:campaign:turnorder', function(obj, prev) {
+        var RTM = new TrailMaster().RoundTurnMgr();
+        RTM.AnnounceCurrentTurn();
+      });
+
+    },
+
     TurnOrder: {
       Get: function () {
         var turnOrder = Campaign().get('turnorder');
@@ -103,6 +106,20 @@ TrailMaster.prototype.RoundTurnMgr = function () {
         RTM.TurnOrder.Set(turnOrder);
       },
     },
+    AnnounceCurrentTurn: function () {
+      var RTM = new TrailMaster().RoundTurnMgr();
+      var TCM = new TrailMaster().TokenCharMgr();
+      var turnOrder = RTM.TurnOrder.Get();
+      var currentToken = getObj("graphic", turnOrder[0].id);
+      if (currentToken.get('layer') === 'gmlayer') {
+        return;
+      }
+
+      var tokenType = TCM.TokenType(currentToken);
+      var tokenIMG = currentToken.get('imgsrc');
+      var tokenName = currentToken.get('showplayers_name') ? currentToken.get('name') : 'NPC';
+      log(tokenName);
+    },
   };
 };
 
@@ -115,8 +132,7 @@ on('ready', function () {
 
   if (TM.settings.roundTurnMgrEnabled) {
     var RTM = new TM.RoundTurnMgr();
+    RTM.RegisterEventHandlers()
   };
-
-  RTM.TurnOrder.UpsertTurn(getObj('graphic', '-KQT-LhWaKtAsvc9oMMK'),20);
 
 });
