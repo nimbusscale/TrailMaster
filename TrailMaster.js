@@ -56,6 +56,16 @@ TrailMaster.prototype.RoundTurnMgr = function () {
         turnOrder = (turnOrder === '' ? '[]' : turnOrder);
         return JSON.parse(turnOrder);
       },
+
+      Set: function (turnOrder) {
+        Campaign().set({ turnorder: JSON.stringify(turnOrder) });
+      },
+
+      Next: function () {
+        var turnOrder = this.Get();
+        turnOrder.push(turnOrder.shift());
+        this.Set(turnOrder);
+      },
     },
   };
 };
@@ -71,6 +81,7 @@ on('ready', function () {
     var RTM = new TM.RoundTurnMgr();
   };
 
-  log(RTM.TurnOrder.Get())
+  //log(RTM.TurnOrder.Get())
+  RTM.TurnOrder.Next()
 
 });
