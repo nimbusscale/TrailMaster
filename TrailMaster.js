@@ -13,9 +13,8 @@ TrailMaster.prototype.TokenCharMgr = function () {
   this.settings = {};
   log(`-=> TrailMaster - TokenCharMgr v${version} <=-`);
   return {
-    CharType: function (charID) {
-      // Pass character object ID and get back if character is a player, npc or mook
-      var char = getObj('character', charID);
+    CharType: function (char) {
+      // Pass character object and get back if character is a player, npc or mook
       var controllers = (char.get('controlledby') !== '') ? char.get('controlledby').split(',') : [];
       if (controllers.length > 0) {
         if (controllers.every(playerIsGM)) {
@@ -34,7 +33,7 @@ TrailMaster.prototype.TokenCharMgr = function () {
       // Pass token object and get back if token is player, npc, mook or nochar (no associated character sheet)
       var charID = token.get('represents');
       if (charID) {
-        var tokenType = this.CharType(charID);
+        var tokenType = this.CharType(getObj('character', charID));
       } else {
         tokenType = 'nochar';
       }
