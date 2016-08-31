@@ -3,8 +3,9 @@ var TrailMaster = function () {
   const version = '0.0.1';
   this.settings = {
       tokenCharMgrEnabled: true,
+      roundTurnMgrEnabled: true,
     };
-  log(`-=> TrailMaster v${version} <=-`);
+  log(`-=> TrailMaster - Main v${version} <=-`);
 };
 
 TrailMaster.prototype.TokenCharMgr = function () {
@@ -43,6 +44,22 @@ TrailMaster.prototype.TokenCharMgr = function () {
   };
 };
 
+TrailMaster.prototype.RoundTurnMgr = function () {
+  'use strict';
+  const version = '0.0.1';
+  this.settings = {};
+  log(`-=> TrailMaster - RoundTurnMgr v${version} <=-`);
+  return {
+    TurnOrder: {
+      Get: function () {
+        var turnOrder = Campaign().get('turnorder');
+        turnOrder = (turnOrder === '' ? '[]' : turnOrder);
+        return JSON.parse(turnOrder);
+      },
+    },
+  };
+};
+
 on('ready', function () {
   'use strict';
   var TM = new TrailMaster();
@@ -50,14 +67,10 @@ on('ready', function () {
     var TCM = new TM.TokenCharMgr();
   };
 
-  var player = TCM.TokenType(getObj('graphic', '-KKpwR5QRLavq99FkTm1'));
-  log(`player token: ${player}`);
-  var npc = TCM.TokenType(getObj('graphic', '-KQRv8cjEYvxaC4eXxto'));
-  log(`npc token: ${npc}`);
-  var mook = TCM.TokenType(getObj('graphic', '-KQRvEIkENjKc2Y1iwFG'));
-  log(`mook token: ${mook}`);
-  var nochar = TCM.TokenType(getObj('graphic', '-KQRvPhMWt4itnlcDLGf'));
-  log(`nochar token: ${nochar}`);
+  if (TM.settings.roundTurnMgrEnabled) {
+    var RTM = new TM.RoundTurnMgr();
+  };
+
+  log(RTM.TurnOrder.Get())
+
 });
-
-
