@@ -62,9 +62,10 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
 
       Next: function () {
-        var turnOrder = this.Get();
+        var RTM = new TrailMaster().RoundTurnMgr()
+        var turnOrder = RTM.TurnOrder.Get();
         turnOrder.push(turnOrder.shift());
-        this.Set(turnOrder);
+        RTM.TurnOrder.Set(turnOrder);
       },
     },
   };
