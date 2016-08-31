@@ -48,7 +48,6 @@ TrailMaster.prototype.RoundTurnMgr = function () {
   return {
     RegisterEventHandlers: function () {
       on('change:campaign:turnorder', function(obj, prev) {
-        var RTM = new TM.RoundTurnMgr();
         RTM.AnnounceCurrentTurn();
       });
 
@@ -66,21 +65,18 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
 
       Next: function () {
-        var RTM = new TM.RoundTurnMgr();
         var turnOrder = RTM.TurnOrder.Get();
         turnOrder.push(turnOrder.shift());
         RTM.TurnOrder.Set(turnOrder);
       },
 
       HasTurn: function (token) {
-        var RTM = new TM.RoundTurnMgr();
         var tokenID = token.get('id');
         var turnOrder = RTM.TurnOrder.Get();
         return turnOrder.findIndex(function (turn) { return turn.id === tokenID; }) >= 0;
       },
 
       UpsertTurn: function (token, pr) {
-        var RTM = new TM.RoundTurnMgr();
         var turnOrder = RTM.TurnOrder.Get();
         if (RTM.TurnOrder.HasTurn(token)) {
           turnOrder = turnOrder.filter(function (turn) {
@@ -108,8 +104,6 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
     },
     AnnounceCurrentTurn: function () {
-      var RTM = new TM.RoundTurnMgr();
-      var TCM = new TM.TokenCharMgr();
       var turnOrder = RTM.TurnOrder.Get();
       var currentToken = getObj("graphic", turnOrder[0].id);
       if (currentToken.get('layer') === 'gmlayer') {
@@ -119,20 +113,23 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       var tokenType = TCM.TokenType(currentToken);
       var tokenIMG = currentToken.get('imgsrc');
       var tokenName = currentToken.get('showplayers_name') ? currentToken.get('name') : 'NPC';
-      log(tokenName);
+      var nameString = `<span style="font-size: 115%; font-weight:bold; text-decoration: underline"><a href="https://journal.roll20.net/character/${currentToken.get('represents')}">${tokenName}</a></span>`;
+      log(nameString);
     },
   };
 };
 
 var TM = new TrailMaster();
+var TCM = new TM.TokenCharMgr();
+var RTM = new TM.RoundTurnMgr();
+
 on('ready', function () {
   'use strict';
   if (TM.settings.tokenCharMgrEnabled) {
-    var TCM = new TM.TokenCharMgr();
+    log('enabled')
   };
 
   if (TM.settings.roundTurnMgrEnabled) {
-    var RTM = new TM.RoundTurnMgr();
     RTM.RegisterEventHandlers()
   };
 
