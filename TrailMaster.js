@@ -106,17 +106,18 @@ TrailMaster.prototype.RoundTurnMgr = function () {
     AnnounceCurrentTurn: function () {
       var turnOrder = RTM.TurnOrder.Get();
       var currentToken = getObj('graphic', turnOrder[0].id);
-
-
       const tokenSize = 70;
       var tokenType = TCM.TokenType(currentToken);
       var tokenIMG = currentToken.get('imgsrc');
       var tokenName = currentToken.get('showplayers_name') ? currentToken.get('name') : 'NPC';
       var nameString = `<span style='font-size: 115%; font-weight:bold; text-decoration: underline;'><a href='https://journal.roll20.net/character/${currentToken.get('represents')}'>${tokenName}</a></span>`;
 
+      if (tokenType !== 'nochar') {
+        var char = getObj('character', currentToken.get('represents'));
+      }
+
       if (tokenType === 'player') {
         var bgColor = '#efe';
-        var char = getObj('character', currentToken.get('represents'));
         var currentHP = getAttrByName(char.id, 'HP');
         var tempHP = getAttrByName(char.id, 'HP-temp');
         var totalHP = Number(currentHP) + Number(tempHP);
@@ -130,6 +131,7 @@ TrailMaster.prototype.RoundTurnMgr = function () {
 
       var imgSrcTag = `<img src='${tokenIMG}' style='float:right; width:${Math.round(tokenSize * .8)}px; height:${Math.round(tokenSize * .8)}px; padding: 0px 2px;' />`;
       var announceBox = `<div style='border: 3px solid #808080; background-color: ${bgColor}; padding: 1px 1px;'> <div style='text-align: left; margin: 5px 5px; position: relative; vertical-align: text-top;'> ${imgSrcTag} ${nameString} <br> ${charInfo ? charInfo : ''} <div style="clear:both;"></div></div></div>`;
+
       if (currentToken.get('layer') === 'objects') {
         sendChat('', `${announceBox}`);
       } else {
