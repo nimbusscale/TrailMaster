@@ -106,9 +106,7 @@ TrailMaster.prototype.RoundTurnMgr = function () {
     AnnounceCurrentTurn: function () {
       var turnOrder = RTM.TurnOrder.Get();
       var currentToken = getObj('graphic', turnOrder[0].id);
-      if (currentToken.get('layer') === 'gmlayer') {
-        return;
-      }
+
 
       const tokenSize = 70;
       var tokenType = TCM.TokenType(currentToken);
@@ -132,7 +130,11 @@ TrailMaster.prototype.RoundTurnMgr = function () {
 
       var imgSrcTag = `<img src='${tokenIMG}' style='float:right; width:${Math.round(tokenSize * .8)}px; height:${Math.round(tokenSize * .8)}px; padding: 0px 2px;' />`;
       var announceBox = `<div style='border: 3px solid #808080; background-color: ${bgColor}; padding: 1px 1px;'> <div style='text-align: left; margin: 5px 5px; position: relative; vertical-align: text-top;'> ${imgSrcTag} ${nameString} <br> ${charInfo ? charInfo : ''} <div style="clear:both;"></div></div></div>`;
-      sendChat('', `/direct ${announceBox}`);
+      if (currentToken.get('layer') === 'objects') {
+        sendChat('', `${announceBox}`);
+      } else {
+        sendChat('', `/w gm ${announceBox}`);
+      }
     },
   };
 };
