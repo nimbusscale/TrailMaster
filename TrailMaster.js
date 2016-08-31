@@ -137,6 +137,15 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       } else {
         sendChat('', `/w gm ${announceBox}`);
       }
+
+      if (char) {
+        var charName = char.get('name');
+        var charID = char.get('id');
+        var actionButtons = `{{[Attacks](~${charID}|attacks_buttons_macro)}}`;
+        var actionTemplate = `&{template:pf_generic} @{${charName}|toggle_rounded_flag}{{color=@{${charName}|rolltemplate_color}}} {{header_image=@{${charName}|header_image-pf_generic}}} {{character_name=@{${charName}|character_name}}} {{character_id=@{${charName}|character_id}}}  {{subtitle}} {{name=Actions}} ${actionButtons}`
+        var actionBox = `<div style='border: 3px solid #808080; background-color: ${bgColor}; padding: 1px 1px;'> ${actionTemplate} <div style="clear:both;"></div></div>`;
+        sendChat('', `/w "${charName}" ${actionBox}`);
+      }
     },
   };
 };
