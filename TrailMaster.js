@@ -62,9 +62,44 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
 
       Next: function () {
-        var RTM = new TrailMaster().RoundTurnMgr()
+        var RTM = new TrailMaster().RoundTurnMgr();
         var turnOrder = RTM.TurnOrder.Get();
         turnOrder.push(turnOrder.shift());
+        RTM.TurnOrder.Set(turnOrder);
+      },
+
+      HasTurn: function (token) {
+        var RTM = new TrailMaster().RoundTurnMgr();
+        var tokenID = token.get('id');
+        var turnOrder = RTM.TurnOrder.Get();
+        return turnOrder.findIndex(function (turn) { return turn.id === tokenID; }) >= 0;
+      },
+
+      UpsertTurn: function (token, pr) {
+        var RTM = new TrailMaster().RoundTurnMgr();
+        var turnOrder = RTM.TurnOrder.Get();
+        if (RTM.TurnOrder.HasTurn(token)) {
+          turnOrder = turnOrder.filter(function (turn) {
+            return turn.id !== token.get('id');
+          });
+        }
+
+        var newTurn = {
+          id: token.get('id'),
+          pr: pr,
+          custom: '',
+          pageid: token.get('pageid'),
+        };
+        var currentTurnID = turnOrder[0].id;
+        turnOrder.push(newTurn);
+        turnOrder.sort(function (a, b) {
+          return b.pr - a.pr;
+        });
+
+        while (turnOrder[0].id !== currentTurnID) {
+          turnOrder.push(turnOrder.shift());
+        };
+
         RTM.TurnOrder.Set(turnOrder);
       },
     },
@@ -82,7 +117,6 @@ on('ready', function () {
     var RTM = new TM.RoundTurnMgr();
   };
 
-  //log(RTM.TurnOrder.Get())
-  RTM.TurnOrder.Next()
+  RTM.TurnOrder.UpsertTurn(getObj('graphic', '-KQT-LhWaKtAsvc9oMMK'),20);
 
 });
