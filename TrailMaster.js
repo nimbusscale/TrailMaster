@@ -27,25 +27,21 @@ TrailMaster.prototype.TokenCharMgr = function () {
         charType = 'mook';
       }
 
-      return charType
+      return charType;
     },
 
     TokenType: function (token) {
-      var CharID = token.get('represents');
-      if (CharID) {
-        var Char = getObj('character', CharID);
-        if (Char.get('controlledby')) {
-          Type = 'player';
-        } else {
-          var Type = 'npc';
-        }
+      // Pass token object and get back if token is player, npc, mook or nochar (no associated character sheet)
+      var charID = token.get('represents');
+      if (charID) {
+        var tokenType = this.CharType(charID);
       } else {
-        var Type = 'mook';
-      };
+        tokenType = 'nochar';
+      }
 
-      return Type
-    }
-  }
+      return tokenType;
+    },
+  };
 };
 
 on('ready', function () {
@@ -54,10 +50,6 @@ on('ready', function () {
   if (TM.settings.tokenCharMgrEnabled) {
     var TCM = new TM.TokenCharMgr();
   };
-
-  var id = '-KQSTIqUJ3qd4OzI1Rle';
-  var char = TCM.CharType(id);
-  log(`char type: ${char}`)
 
   var player = TCM.TokenType(getObj('graphic', '-KKpwR5QRLavq99FkTm1'));
   log(`player token: ${player}`);
