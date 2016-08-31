@@ -1,6 +1,7 @@
 var TrailMaster = function () {
   'use strict';
   const version = '0.0.1';
+  log(`TM Version = ${version}`)
   this.settings = {
       tokenCharMgrEnabled: true,
       roundTurnMgrEnabled: true,
@@ -47,7 +48,7 @@ TrailMaster.prototype.RoundTurnMgr = function () {
   return {
     RegisterEventHandlers: function () {
       on('change:campaign:turnorder', function(obj, prev) {
-        var RTM = new TrailMaster().RoundTurnMgr();
+        var RTM = new TM.RoundTurnMgr();
         RTM.AnnounceCurrentTurn();
       });
 
@@ -65,21 +66,21 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
 
       Next: function () {
-        var RTM = new TrailMaster().RoundTurnMgr();
+        var RTM = new TM.RoundTurnMgr();
         var turnOrder = RTM.TurnOrder.Get();
         turnOrder.push(turnOrder.shift());
         RTM.TurnOrder.Set(turnOrder);
       },
 
       HasTurn: function (token) {
-        var RTM = new TrailMaster().RoundTurnMgr();
+        var RTM = new TM.RoundTurnMgr();
         var tokenID = token.get('id');
         var turnOrder = RTM.TurnOrder.Get();
         return turnOrder.findIndex(function (turn) { return turn.id === tokenID; }) >= 0;
       },
 
       UpsertTurn: function (token, pr) {
-        var RTM = new TrailMaster().RoundTurnMgr();
+        var RTM = new TM.RoundTurnMgr();
         var turnOrder = RTM.TurnOrder.Get();
         if (RTM.TurnOrder.HasTurn(token)) {
           turnOrder = turnOrder.filter(function (turn) {
@@ -107,8 +108,8 @@ TrailMaster.prototype.RoundTurnMgr = function () {
       },
     },
     AnnounceCurrentTurn: function () {
-      var RTM = new TrailMaster().RoundTurnMgr();
-      var TCM = new TrailMaster().TokenCharMgr();
+      var RTM = new TM.RoundTurnMgr();
+      var TCM = new TM.TokenCharMgr();
       var turnOrder = RTM.TurnOrder.Get();
       var currentToken = getObj("graphic", turnOrder[0].id);
       if (currentToken.get('layer') === 'gmlayer') {
@@ -123,9 +124,9 @@ TrailMaster.prototype.RoundTurnMgr = function () {
   };
 };
 
+var TM = new TrailMaster();
 on('ready', function () {
   'use strict';
-  var TM = new TrailMaster();
   if (TM.settings.tokenCharMgrEnabled) {
     var TCM = new TM.TokenCharMgr();
   };
